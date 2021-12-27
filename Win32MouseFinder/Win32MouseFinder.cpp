@@ -1,15 +1,25 @@
 // Win32MouseFinder.cpp : Defines the entry point for the application.
 //
 
+#pragma comment(linker,"/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
+
+
 #include "framework.h"
 #include "Win32MouseFinder.h"
 
 #define MAX_LOADSTRING 100
 
+UINT const WMAPP_NOTIFYCALLBACK = WM_APP + 1;
+
+// {954B7474-3CB8-4B73-9429-E3FA5C954DBF}
+static const GUID NotificationIconGuid =
+{ 0x954b7474, 0x3cb8, 0x4b73, { 0x94, 0x29, 0xe3, 0xfa, 0x5c, 0x95, 0x4d, 0xbf } };
+
 // Global Variables:
 HINSTANCE hInst;                                // current instance
 WCHAR szTitle[MAX_LOADSTRING];                  // The title bar text
 WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
+BOOL CreateNotificationIcon(HWND hwnd);
 
 // Forward declarations of functions included in this code module:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
@@ -105,11 +115,31 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
       return FALSE;
    }
 
+   CreateNotificationIcon(hWnd);
    ShowWindow(hWnd, nCmdShow);
    UpdateWindow(hWnd);
 
    return TRUE;
 }
+
+BOOL CreateNotificationIcon(HWND hwnd)
+{
+    NOTIFYICONDATA nid = { sizeof(nid) };
+    nid.hWnd = hwnd;
+    nid.uFlags = NIF_ICON | NIF_TIP | NIF_MESSAGE | NIF_SHOWTIP | NIF_GUID;
+    nid.guidItem = NotificationIconGuid;
+    nid.uCallbackMessage = WMAPP_NOTIFYCALLBACK;
+    nid.uVersion = NOTIFYICON_VERSION_4;
+    LoadIconMetric(hInst, MAKEINTRESOURCE(IDI_WIN32MOUSEFINDER), LIM_SMALL, &nid.hIcon);
+    LoadString(hInst, IDS_TOOLTIP, nid.szTip, ARRAYSIZE(nid.szTip));
+
+    // Add the icon
+    Shell_NotifyIcon(NIM_ADD, &nid);
+
+    // Set the version
+    return Shell_NotifyIcon(NIM_SETVERSION, &nid);
+}
+
 
 //
 //  FUNCTION: WndProc(HWND, UINT, WPARAM, LPARAM)
