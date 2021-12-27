@@ -19,13 +19,14 @@ static const GUID NotificationIconGuid =
 HINSTANCE hInst;                                // current instance
 WCHAR szTitle[MAX_LOADSTRING];                  // The title bar text
 WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
-BOOL CreateNotificationIcon(HWND hwnd);
 
 // Forward declarations of functions included in this code module:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
+BOOL                CreateNotificationIcon(HWND hwnd);
+BOOL                DestroyNotificationIcon();
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
@@ -140,6 +141,14 @@ BOOL CreateNotificationIcon(HWND hwnd)
     return Shell_NotifyIcon(NIM_SETVERSION, &nid);
 }
 
+BOOL DestroyNotificationIcon()
+{
+    NOTIFYICONDATA nid = { sizeof(nid) };
+    nid.uFlags = NIF_GUID;
+    nid.guidItem = NotificationIconGuid;
+    return Shell_NotifyIcon(NIM_DELETE, &nid);
+}
+
 
 //
 //  FUNCTION: WndProc(HWND, UINT, WPARAM, LPARAM)
@@ -181,6 +190,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         }
         break;
     case WM_DESTROY:
+        DestroyNotificationIcon();
         PostQuitMessage(0);
         break;
     default:
