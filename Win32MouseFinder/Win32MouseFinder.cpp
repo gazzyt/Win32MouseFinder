@@ -27,6 +27,7 @@ LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 BOOL                CreateNotificationIcon(HWND hwnd);
 BOOL                DestroyNotificationIcon();
+void                ShowContextMenu(HWND hwnd, POINT pt);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
@@ -149,6 +150,28 @@ BOOL DestroyNotificationIcon()
     return Shell_NotifyIcon(NIM_DELETE, &nid);
 }
 
+void ShowContextMenu(HWND hwnd, POINT pt)
+{
+    HMENU hMenu = LoadMenu(hInst, MAKEINTRESOURCE(IDC_CONTEXTMENU));
+    if (hMenu)
+    {
+        HMENU hSubMenu = GetSubMenu(hMenu, 0);
+        if (hSubMenu)
+        {
+            UINT uFlags = TPM_RIGHTBUTTON;
+            if (GetSystemMetrics(SM_MENUDROPALIGNMENT) != 0)
+            {
+                uFlags |= TPM_RIGHTALIGN;
+            }
+            else
+            {
+                uFlags |= TPM_LEFTALIGN;
+            }
+            TrackPopupMenuEx(hSubMenu, uFlags, pt.x, pt.y, hwnd, NULL);
+        }
+        DestroyMenu(hMenu);
+    }
+}
 
 //
 //  FUNCTION: WndProc(HWND, UINT, WPARAM, LPARAM)
@@ -193,6 +216,18 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         DestroyNotificationIcon();
         PostQuitMessage(0);
         break;
+
+    case WMAPP_NOTIFYCALLBACK:
+        switch (LOWORD(lParam))
+        {
+        case WM_CONTEXTMENU:
+            POINT cursorPos;
+            auto ret = GetCursorPos(&cursorPos);
+            ShowContextMenu(hWnd, cursorPos);
+            break;
+        }
+        break;
+
     default:
         return DefWindowProc(hWnd, message, wParam, lParam);
     }
