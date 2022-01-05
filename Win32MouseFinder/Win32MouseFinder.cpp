@@ -19,6 +19,8 @@ static const GUID NotificationIconGuid =
 HINSTANCE hInst;                                // current instance
 WCHAR szTitle[MAX_LOADSTRING];                  // The title bar text
 WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
+constexpr size_t ccStringBuffer = 255;
+TCHAR szStringBuffer[ccStringBuffer];
 
 // Forward declarations of functions included in this code module:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
@@ -28,6 +30,7 @@ INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 BOOL                CreateNotificationIcon(HWND hwnd);
 BOOL                DestroyNotificationIcon();
 void                ShowContextMenu(HWND hwnd, POINT pt);
+BOOL                RegisterRawMouseInput(HWND hWnd);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
@@ -118,7 +121,8 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    }
 
    CreateNotificationIcon(hWnd);
-   ShowWindow(hWnd, nCmdShow);
+   RegisterRawMouseInput(hWnd);
+   ShowWindow(hWnd, SW_HIDE);
    UpdateWindow(hWnd);
 
    return TRUE;
@@ -167,10 +171,24 @@ void ShowContextMenu(HWND hwnd, POINT pt)
             {
                 uFlags |= TPM_LEFTALIGN;
             }
+
+            SetForegroundWindow(hwnd);
             TrackPopupMenuEx(hSubMenu, uFlags, pt.x, pt.y, hwnd, NULL);
         }
         DestroyMenu(hMenu);
     }
+}
+
+BOOL RegisterRawMouseInput(HWND hWnd)
+{
+    RAWINPUTDEVICE mouse;
+
+    mouse.usUsagePage = 0x01;   // HID_USAGE_PAGE_GENERIC
+    mouse.usUsage = 0x02;       // HID_USAGE_GENERIC_MOUSE
+    mouse.dwFlags = RIDEV_INPUTSINK;
+    mouse.hwndTarget = hWnd;
+
+    return RegisterRawInputDevices(&mouse, 1, sizeof(mouse));
 }
 
 //
@@ -225,6 +243,55 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             auto ret = GetCursorPos(&cursorPos);
             ShowContextMenu(hWnd, cursorPos);
             break;
+        }
+        break;
+
+    case WM_INPUT:
+        {
+            UINT dwSize;
+
+            GetRawInputData((HRAWINPUT)lParam, RID_INPUT, NULL, &dwSize, sizeof(RAWINPUTHEADER));
+            LPBYTE lpb = new BYTE[dwSize];
+            if (lpb == nullptr)
+            {
+                return 0;
+            }
+
+            if (GetRawInputData((HRAWINPUT)lParam, RID_INPUT, lpb, &dwSize, sizeof(RAWINPUTHEADER)) != dwSize)
+            {
+                OutputDebugString(TEXT("GetRawInputData did not return expected size"));
+            }
+
+            RAWINPUT* raw = (RAWINPUT*)lpb;
+
+            if (raw->header.dwType == RIM_TYPEMOUSE)
+            {
+                if (raw->data.mouse.usFlags == MOUSE_MOVE_RELATIVE)
+                {
+                    HRESULT hResult = StringCchPrintf(szStringBuffer, ccStringBuffer,
+                        TEXT("Mouse: usFlags=%04x ulButtons=%04x usButtonFlags=%04x usButtonData=%04x ulRawButtons=%04x lLastX=%04x lLastY=%04x ulExtraInformation=%04x\r\n"),
+                        raw->data.mouse.usFlags,
+                        raw->data.mouse.ulButtons,
+                        raw->data.mouse.usButtonFlags,
+                        raw->data.mouse.usButtonData,
+                        raw->data.mouse.ulRawButtons,
+                        raw->data.mouse.lLastX,
+                        raw->data.mouse.lLastY,
+                        raw->data.mouse.ulExtraInformation);
+
+                    OutputDebugString(szStringBuffer);
+                }
+                else
+                {
+                    OutputDebugString(TEXT("Mouse event was not MOUSE_MOVE_RELATIVE - ignoring"));
+                }
+            }
+            else
+            {
+                OutputDebugString(TEXT("It's not a mouse"));
+            }
+
+            delete[] lpb;
         }
         break;
 

@@ -10,6 +10,7 @@
 #include <windows.h>
 #include <shellapi.h>
 #include <CommCtrl.h>
+#include <strsafe.h>
 // C RunTime Header Files
 #include <stdlib.h>
 #include <malloc.h>
