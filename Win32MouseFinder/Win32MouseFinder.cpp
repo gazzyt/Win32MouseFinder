@@ -11,8 +11,10 @@
 #include "MouseMoveProcessor.h"
 
 #define MAX_LOADSTRING 100
+#define TIMER_DURATION_MS 1000
 
 UINT const WMAPP_NOTIFYCALLBACK = WM_APP + 1;
+constexpr UINT_PTR TIMER_ID = 2;
 
 // {954B7474-3CB8-4B73-9429-E3FA5C954DBF}
 static const GUID NotificationIconGuid =
@@ -288,6 +290,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                     if (mouseMoveProcessor.ProcessMovement(raw->data.mouse.lLastX))
                     {
                         OutputDebugString(TEXT("Triggered!\n"));
+                        auto result = SetTimer(hWnd, TIMER_ID, TIMER_DURATION_MS, NULL);
+                        if (result == 0)
+                            OutputDebugString(TEXT("Timer creation failed\n"));
                     }
                 }
                 else
@@ -302,6 +307,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
             delete[] lpb;
         }
+        break;
+
+    case WM_TIMER:
+        KillTimer(hWnd, TIMER_ID);
+        OutputDebugString(TEXT("Timer expired\n"));
         break;
 
     default:
