@@ -7,6 +7,9 @@
 #include "framework.h"
 #include "Win32MouseFinder.h"
 
+#include "TickTimeProvider.h"
+#include "MouseMoveProcessor.h"
+
 #define MAX_LOADSTRING 100
 
 UINT const WMAPP_NOTIFYCALLBACK = WM_APP + 1;
@@ -21,6 +24,7 @@ WCHAR szTitle[MAX_LOADSTRING];                  // The title bar text
 WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
 constexpr size_t ccStringBuffer = 255;
 TCHAR szStringBuffer[ccStringBuffer];
+MouseMoveProcessor<TickTimeProvider> mouseMoveProcessor;
 
 // Forward declarations of functions included in this code module:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
@@ -279,7 +283,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                         raw->data.mouse.lLastY,
                         raw->data.mouse.ulExtraInformation);
 
-                    OutputDebugString(szStringBuffer);
+                    //OutputDebugString(szStringBuffer);
+
+                    if (mouseMoveProcessor.ProcessMovement(raw->data.mouse.lLastX))
+                    {
+                        OutputDebugString(TEXT("Triggered!\n"));
+                    }
                 }
                 else
                 {
