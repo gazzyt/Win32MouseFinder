@@ -16,12 +16,21 @@
 UINT const WMAPP_NOTIFYCALLBACK = WM_APP + 1;
 constexpr UINT_PTR TIMER_ID = 2;
 
+// https://social.msdn.microsoft.com/Forums/vstudio/en-US/1c3be04f-32ed-4f63-9289-557d4426f65b/shellnorifyicon-question?forum=vcgeneral
+#ifdef _DEBUG
 // {954B7474-3CB8-4B73-9429-E3FA5C954DBF}
 static const GUID NotificationIconGuid =
 { 0x954b7474, 0x3cb8, 0x4b73, { 0x94, 0x29, 0xe3, 0xfa, 0x5c, 0x95, 0x4d, 0xbf } };
+#else
+// {7CDAB978-8037-4CA4-B945-56A9692413FB}
+static const GUID NotificationIconGuid =
+{ 0x7cdab978, 0x8037, 0x4ca4, { 0xb9, 0x45, 0x56, 0xa9, 0x69, 0x24, 0x13, 0xfb } };
+#endif // DEBUG
+
 
 // Global Variables:
 HINSTANCE hInst;                                // current instance
+HWND hMainWindow;
 WCHAR szTitle[MAX_LOADSTRING];                  // The title bar text
 WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
 constexpr size_t ccStringBuffer = 255;
@@ -37,6 +46,7 @@ BOOL                CreateNotificationIcon(HWND hwnd);
 BOOL                DestroyNotificationIcon();
 void                ShowContextMenu(HWND hwnd, POINT pt);
 BOOL                RegisterRawMouseInput(HWND hWnd);
+void                ShowErrorDialog(LPCTSTR message);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
@@ -118,18 +128,18 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
    hInst = hInstance; // Store instance handle in our global variable
 
-   HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
+   hMainWindow = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
       CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
 
-   if (!hWnd)
+   if (!hMainWindow)
    {
       return FALSE;
    }
 
-   CreateNotificationIcon(hWnd);
-   RegisterRawMouseInput(hWnd);
-   ShowWindow(hWnd, SW_HIDE);
-   UpdateWindow(hWnd);
+   CreateNotificationIcon(hMainWindow);
+   RegisterRawMouseInput(hMainWindow);
+   ShowWindow(hMainWindow, SW_HIDE);
+   UpdateWindow(hMainWindow);
 
    return TRUE;
 }
@@ -146,7 +156,10 @@ BOOL CreateNotificationIcon(HWND hwnd)
     LoadString(hInst, IDS_TOOLTIP, nid.szTip, ARRAYSIZE(nid.szTip));
 
     // Add the icon
-    Shell_NotifyIcon(NIM_ADD, &nid);
+    if (!Shell_NotifyIcon(NIM_ADD, &nid))
+    {
+        ShowErrorDialog(TEXT("Shell_NotifyIcon(NIM_ADD) failed"));
+    }
 
     // Set the version
     return Shell_NotifyIcon(NIM_SETVERSION, &nid);
@@ -339,3 +352,13 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     }
     return (INT_PTR)FALSE;
 }
+
+void ShowErrorDialog(LPCTSTR message)
+{
+    HRESULT hResult = StringCchPrintf(szStringBuffer, ccStringBuffer,
+        TEXT("Error: %04x"),
+        GetLastError());
+
+    MessageBox(hMainWindow, message, szStringBuffer, MB_OK | MB_ICONERROR | MB_APPLMODAL);
+}
+
