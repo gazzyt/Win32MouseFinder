@@ -10,6 +10,7 @@ public:
 
 	void Show(HINSTANCE hInstance, HWND parent);
 	void Hide();
+	void UpdatePosition(HWND parent);
 
 private:
 	static LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);

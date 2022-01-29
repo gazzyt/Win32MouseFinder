@@ -27,6 +27,24 @@ void BigMouse::Hide()
     }
 }
 
+void BigMouse::UpdatePosition(HWND parent)
+{
+    if (m_bigMouse != 0)
+    {
+        POINT currentMousePos;
+        if (!GetCursorPos(&currentMousePos))
+        {
+            ErrorUtil::ShowErrorDialog(parent, TEXT("GetCursorPos for BigMouse failed"));
+            return;
+        }
+
+        if (!MoveWindow(m_bigMouse, currentMousePos.x, currentMousePos.y, 400, 400, FALSE))
+        {
+            ErrorUtil::ShowErrorDialog(parent, TEXT("MoveWindow for BigMouse failed"));
+        }
+    }
+}
+
 LRESULT CALLBACK BigMouse::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     HBRUSH hBrush;

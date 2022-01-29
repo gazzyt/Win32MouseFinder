@@ -310,6 +310,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                         if (result == 0)
                             OutputDebugString(TEXT("Timer creation failed\n"));
                     }
+
+                    bigMouse.UpdatePosition(hMainWindow);
                 }
                 else
                 {
