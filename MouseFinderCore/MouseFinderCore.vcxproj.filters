@@ -24,6 +24,15 @@
     <ClInclude Include="ErrorUtil.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="MouseMoveProcessor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MouseMoveRecord.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TickTimeProvider.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BigMouse.cpp">

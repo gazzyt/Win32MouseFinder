@@ -154,6 +154,9 @@
     <ClInclude Include="BigMouse.h" />
     <ClInclude Include="ErrorUtil.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="MouseMoveProcessor.h" />
+    <ClInclude Include="MouseMoveRecord.h" />
+    <ClInclude Include="TickTimeProvider.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BigMouse.cpp" />
