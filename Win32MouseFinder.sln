@@ -5,6 +5,8 @@ VisualStudioVersion = 17.0.32014.148
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Win32MouseFinder", "Win32MouseFinder\Win32MouseFinder.vcxproj", "{95C906A7-CE80-4C9F-88D5-6D351F7582F6}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MouseFinderCore", "MouseFinderCore\MouseFinderCore.vcxproj", "{BE540776-C8F3-418F-966A-AA7214AD4186}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -21,6 +23,14 @@ Global
 		{95C906A7-CE80-4C9F-88D5-6D351F7582F6}.Release|x64.Build.0 = Release|x64
 		{95C906A7-CE80-4C9F-88D5-6D351F7582F6}.Release|x86.ActiveCfg = Release|Win32
 		{95C906A7-CE80-4C9F-88D5-6D351F7582F6}.Release|x86.Build.0 = Release|Win32
+		{BE540776-C8F3-418F-966A-AA7214AD4186}.Debug|x64.ActiveCfg = Debug|x64
+		{BE540776-C8F3-418F-966A-AA7214AD4186}.Debug|x64.Build.0 = Debug|x64
+		{BE540776-C8F3-418F-966A-AA7214AD4186}.Debug|x86.ActiveCfg = Debug|Win32
+		{BE540776-C8F3-418F-966A-AA7214AD4186}.Debug|x86.Build.0 = Debug|Win32
+		{BE540776-C8F3-418F-966A-AA7214AD4186}.Release|x64.ActiveCfg = Release|x64
+		{BE540776-C8F3-418F-966A-AA7214AD4186}.Release|x64.Build.0 = Release|x64
+		{BE540776-C8F3-418F-966A-AA7214AD4186}.Release|x86.ActiveCfg = Release|Win32
+		{BE540776-C8F3-418F-966A-AA7214AD4186}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

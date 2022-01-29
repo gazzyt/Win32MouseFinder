@@ -9,6 +9,8 @@
 
 #include "TickTimeProvider.h"
 #include "MouseMoveProcessor.h"
+#include "BigMouse.h"
+#include "ErrorUtil.h"
 
 #define MAX_LOADSTRING 100
 #define TIMER_DURATION_MS 1000
@@ -36,6 +38,7 @@ WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
 constexpr size_t ccStringBuffer = 255;
 TCHAR szStringBuffer[ccStringBuffer];
 MouseMoveProcessor<TickTimeProvider> mouseMoveProcessor;
+BigMouse bigMouse;
 
 // Forward declarations of functions included in this code module:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
@@ -46,7 +49,6 @@ BOOL                CreateNotificationIcon(HWND hwnd);
 BOOL                DestroyNotificationIcon();
 void                ShowContextMenu(HWND hwnd, POINT pt);
 BOOL                RegisterRawMouseInput(HWND hWnd);
-void                ShowErrorDialog(LPCTSTR message);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
@@ -158,7 +160,7 @@ BOOL CreateNotificationIcon(HWND hwnd)
     // Add the icon
     if (!Shell_NotifyIcon(NIM_ADD, &nid))
     {
-        ShowErrorDialog(TEXT("Shell_NotifyIcon(NIM_ADD) failed"));
+        ErrorUtil:: ShowErrorDialog(hMainWindow, TEXT("Shell_NotifyIcon(NIM_ADD) failed"));
     }
 
     // Set the version
@@ -303,6 +305,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                     if (mouseMoveProcessor.ProcessMovement(raw->data.mouse.lLastX))
                     {
                         OutputDebugString(TEXT("Triggered!\n"));
+                        bigMouse.Show(hInst, hMainWindow);
                         auto result = SetTimer(hWnd, TIMER_ID, TIMER_DURATION_MS, NULL);
                         if (result == 0)
                             OutputDebugString(TEXT("Timer creation failed\n"));
@@ -324,6 +327,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
     case WM_TIMER:
         KillTimer(hWnd, TIMER_ID);
+        bigMouse.Hide();
         OutputDebugString(TEXT("Timer expired\n"));
         break;
 
@@ -353,12 +357,4 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     return (INT_PTR)FALSE;
 }
 
-void ShowErrorDialog(LPCTSTR message)
-{
-    HRESULT hResult = StringCchPrintf(szStringBuffer, ccStringBuffer,
-        TEXT("Error: %04x"),
-        GetLastError());
-
-    MessageBox(hMainWindow, message, szStringBuffer, MB_OK | MB_ICONERROR | MB_APPLMODAL);
-}
 
