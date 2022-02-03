@@ -15,7 +15,7 @@ void BigMouse::Show(HINSTANCE hInstance, HWND parent, unsigned int bitmapResourc
     if (m_bigMouse == 0)
     {
         m_bitmapResource = bitmapResource;
-        m_bigMouse = CreateWindowEx(WS_EX_LAYERED | WS_EX_TOPMOST | WS_EX_TOOLWINDOW, m_wndClassName, nullptr, WS_POPUP | WS_VISIBLE | WS_CHILD, 0, 0, 200, 200, NULL, NULL, hInstance, NULL);
+        m_bigMouse = CreateWindowEx(WS_EX_LAYERED | WS_EX_TOPMOST | WS_EX_TOOLWINDOW, m_wndClassName, nullptr, WS_POPUP | WS_VISIBLE | WS_CHILD, 0, 0, m_width, m_height, NULL, NULL, hInstance, NULL);
         SetLayeredWindowAttributes(m_bigMouse, RGB(255, 0, 0), (255 * 70) / 100, LWA_COLORKEY); // 70% alpha
         ShowWindow(m_bigMouse, SW_SHOW);
     }
@@ -41,7 +41,7 @@ void BigMouse::UpdatePosition(HWND parent)
             return;
         }
 
-        if (!MoveWindow(m_bigMouse, currentMousePos.x, currentMousePos.y, 200, 200, FALSE))
+        if (!MoveWindow(m_bigMouse, currentMousePos.x, currentMousePos.y, m_width, m_height, FALSE))
         {
             ErrorUtil::ShowErrorDialog(parent, TEXT("MoveWindow for BigMouse failed"));
         }
@@ -50,8 +50,6 @@ void BigMouse::UpdatePosition(HWND parent)
 
 LRESULT CALLBACK BigMouse::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-    HBRUSH hBrush;
-
     switch (message)
     {
         case WM_CREATE:
@@ -76,7 +74,7 @@ LRESULT CALLBACK BigMouse::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARA
 
             HDC hdcMem = CreateCompatibleDC(hdc);
             HGDIOBJ hbmOld = SelectObject(hdcMem, m_mouseBitmap);
-            BitBlt(hdc, 0, 0, 200, 200, hdcMem, 0, 0, SRCCOPY);
+            BitBlt(hdc, 0, 0, m_width, m_height, hdcMem, 0, 0, SRCCOPY);
             SelectObject(hdcMem, hbmOld);
 
             EndPaint(hWnd, &ps);

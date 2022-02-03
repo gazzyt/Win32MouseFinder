@@ -22,5 +22,7 @@ private:
 	static ATOM m_wndClass;
 	static unsigned int m_bitmapResource;
 	static HANDLE m_mouseBitmap;
+	static constexpr int m_width = 200;
+	static constexpr int m_height = 200;
 
 };
