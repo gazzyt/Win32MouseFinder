@@ -68,7 +68,6 @@ LRESULT CALLBACK BigMouse::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARA
 
         case WM_PAINT:
         {
-            BITMAP bm;
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hWnd, &ps);
 
