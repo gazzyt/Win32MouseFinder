@@ -305,7 +305,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                     if (mouseMoveProcessor.ProcessMovement(raw->data.mouse.lLastX))
                     {
                         OutputDebugString(TEXT("Triggered!\n"));
-                        bigMouse.Show(hInst, hMainWindow);
+                        bigMouse.Show(hInst, hMainWindow, IDB_MOUSE200);
                         auto result = SetTimer(hWnd, TIMER_ID, TIMER_DURATION_MS, NULL);
                         if (result == 0)
                             OutputDebugString(TEXT("Timer creation failed\n"));

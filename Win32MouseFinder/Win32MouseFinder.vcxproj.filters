@@ -45,5 +45,8 @@
     <Image Include="Win32MouseFinder.ico">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="mouse200.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>

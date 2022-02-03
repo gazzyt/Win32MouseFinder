@@ -2,8 +2,10 @@
 #include "ErrorUtil.h"
 
 ATOM BigMouse::m_wndClass(0);
+HANDLE BigMouse::m_mouseBitmap(0);
+unsigned int BigMouse::m_bitmapResource(0);
 
-void BigMouse::Show(HINSTANCE hInstance, HWND parent)
+void BigMouse::Show(HINSTANCE hInstance, HWND parent, unsigned int bitmapResource)
 {
 	if (m_wndClass == 0)
 	{
@@ -12,8 +14,9 @@ void BigMouse::Show(HINSTANCE hInstance, HWND parent)
 
     if (m_bigMouse == 0)
     {
-        m_bigMouse = CreateWindowEx(WS_EX_LAYERED | WS_EX_TOPMOST | WS_EX_TOOLWINDOW, m_wndClassName, TEXT("LORDY"), WS_POPUPWINDOW | WS_VISIBLE | WS_BORDER | WS_CHILD, 400, 400, 400, 400, NULL, NULL, hInstance, NULL);
-        SetLayeredWindowAttributes(m_bigMouse, 0, (255 * 70) / 100, LWA_ALPHA); // 70% alpha
+        m_bitmapResource = bitmapResource;
+        m_bigMouse = CreateWindowEx(WS_EX_LAYERED | WS_EX_TOPMOST | WS_EX_TOOLWINDOW, m_wndClassName, nullptr, WS_POPUP | WS_VISIBLE | WS_CHILD, 0, 0, 200, 200, NULL, NULL, hInstance, NULL);
+        SetLayeredWindowAttributes(m_bigMouse, RGB(255, 0, 0), (255 * 70) / 100, LWA_COLORKEY); // 70% alpha
         ShowWindow(m_bigMouse, SW_SHOW);
     }
 }
@@ -38,7 +41,7 @@ void BigMouse::UpdatePosition(HWND parent)
             return;
         }
 
-        if (!MoveWindow(m_bigMouse, currentMousePos.x, currentMousePos.y, 400, 400, FALSE))
+        if (!MoveWindow(m_bigMouse, currentMousePos.x, currentMousePos.y, 200, 200, FALSE))
         {
             ErrorUtil::ShowErrorDialog(parent, TEXT("MoveWindow for BigMouse failed"));
         }
@@ -51,14 +54,31 @@ LRESULT CALLBACK BigMouse::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARA
 
     switch (message)
     {
+        case WM_CREATE:
+            m_mouseBitmap = LoadImage(GetModuleHandle(nullptr),
+                MAKEINTRESOURCE(m_bitmapResource),
+                IMAGE_BITMAP,
+                0,
+                0,
+                LR_DEFAULTCOLOR);
+            break;
+
+        case WM_DESTROY:
+            DeleteObject(m_mouseBitmap);
+            m_mouseBitmap = 0;
+            break;
+
         case WM_PAINT:
         {
+            BITMAP bm;
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hWnd, &ps);
-            hBrush = CreateSolidBrush(RGB(200, 0, 0));
-            FillRect(hdc, &ps.rcPaint, hBrush);
-            DeleteObject(hBrush);
-            // TODO: Add any drawing code that uses hdc here...
+
+            HDC hdcMem = CreateCompatibleDC(hdc);
+            HGDIOBJ hbmOld = SelectObject(hdcMem, m_mouseBitmap);
+            BitBlt(hdc, 0, 0, 200, 200, hdcMem, 0, 0, SRCCOPY);
+            SelectObject(hdcMem, hbmOld);
+
             EndPaint(hWnd, &ps);
         }
         break;
