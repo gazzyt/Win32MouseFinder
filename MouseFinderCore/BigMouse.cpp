@@ -16,7 +16,7 @@ void BigMouse::Show(HINSTANCE hInstance, HWND parent, unsigned int bitmapResourc
     {
         m_bitmapResource = bitmapResource;
         m_bigMouse = CreateWindowEx(WS_EX_LAYERED | WS_EX_TOPMOST | WS_EX_TOOLWINDOW, m_wndClassName, nullptr, WS_POPUP | WS_VISIBLE | WS_CHILD, 0, 0, m_width, m_height, NULL, NULL, hInstance, NULL);
-        SetLayeredWindowAttributes(m_bigMouse, RGB(255, 0, 0), (255 * 70) / 100, LWA_COLORKEY); // 70% alpha
+        SetLayeredWindowAttributes(m_bigMouse, RGB(255, 0, 0), 0, LWA_COLORKEY); // set red as transparent colour
         ShowWindow(m_bigMouse, SW_SHOW);
     }
 }
