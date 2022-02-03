@@ -24,5 +24,7 @@ private:
 	static HANDLE m_mouseBitmap;
 	static constexpr int m_width = 200;
 	static constexpr int m_height = 200;
+	static constexpr int m_widthOffset = 66;
+	static constexpr int m_heightOffset = 22;
 
 };

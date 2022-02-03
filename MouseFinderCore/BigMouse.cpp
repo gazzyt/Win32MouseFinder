@@ -41,7 +41,7 @@ void BigMouse::UpdatePosition(HWND parent)
             return;
         }
 
-        if (!MoveWindow(m_bigMouse, currentMousePos.x, currentMousePos.y, m_width, m_height, FALSE))
+        if (!MoveWindow(m_bigMouse, currentMousePos.x - m_widthOffset, currentMousePos.y - m_heightOffset, m_width, m_height, FALSE))
         {
             ErrorUtil::ShowErrorDialog(parent, TEXT("MoveWindow for BigMouse failed"));
         }
