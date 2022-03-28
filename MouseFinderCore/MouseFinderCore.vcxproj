@@ -151,14 +151,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="AutoRun.h" />
     <ClInclude Include="BigMouse.h" />
     <ClInclude Include="ErrorUtil.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="MouseMoveProcessor.h" />
     <ClInclude Include="MouseMoveRecord.h" />
+    <ClInclude Include="targetver.h" />
     <ClInclude Include="TickTimeProvider.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AutoRun.cpp" />
     <ClCompile Include="BigMouse.cpp" />
     <ClCompile Include="ErrorUtil.cpp" />
   </ItemGroup>
