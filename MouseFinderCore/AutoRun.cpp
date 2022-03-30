@@ -4,7 +4,7 @@ namespace AutoRun
 {
 	bool IsAutoRunEnabled()
 	{
-		return false;
+		return true;
 	}
 
 	void EnableAutoRun()

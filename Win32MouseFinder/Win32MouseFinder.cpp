@@ -10,6 +10,7 @@
 #include "TickTimeProvider.h"
 #include "MouseMoveProcessor.h"
 #include "BigMouse.h"
+#include "AutoRun.h"
 #include "ErrorUtil.h"
 
 #define MAX_LOADSTRING 100
@@ -180,6 +181,7 @@ void ShowContextMenu(HWND hwnd, POINT pt)
     HMENU hMenu = LoadMenu(hInst, MAKEINTRESOURCE(IDC_CONTEXTMENU));
     if (hMenu)
     {
+        CheckMenuItem(hMenu, IDM_AUTORUN, MF_BYCOMMAND | (AutoRun::IsAutoRunEnabled() ? MF_CHECKED : MF_UNCHECKED));
         HMENU hSubMenu = GetSubMenu(hMenu, 0);
         if (hSubMenu)
         {
