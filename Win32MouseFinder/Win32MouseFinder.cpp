@@ -240,6 +240,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             case IDM_EXIT:
                 DestroyWindow(hWnd);
                 break;
+            case IDM_AUTORUN:
+                AutoRun::ToggleAutoRun();
+                break;
             default:
                 return DefWindowProc(hWnd, message, wParam, lParam);
             }
