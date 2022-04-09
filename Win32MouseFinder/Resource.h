@@ -10,7 +10,6 @@
 #define IDS_TOOLTIP                     104
 #define IDM_EXIT                        105
 #define IDI_WIN32MOUSEFINDER            107
-#define IDI_SMALL                       108
 #define IDC_WIN32MOUSEFINDER            109
 #define IDR_MAINFRAME                   128
 #define IDC_CONTEXTMENU                 129
