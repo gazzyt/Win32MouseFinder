@@ -36,8 +36,12 @@ HINSTANCE hInst;                                // current instance
 HWND hMainWindow;
 WCHAR szTitle[MAX_LOADSTRING];                  // The title bar text
 WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
+
+#ifdef DEBUG
 constexpr size_t ccStringBuffer = 255;
 TCHAR szStringBuffer[ccStringBuffer];
+#endif // DEBUG
+
 MouseMoveProcessor<TickTimeProvider> mouseMoveProcessor;
 BigMouse bigMouse;
 
@@ -294,6 +298,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             {
                 if (raw->data.mouse.usFlags == MOUSE_MOVE_RELATIVE)
                 {
+#ifdef DEBUG
                     HRESULT hResult = StringCchPrintf(szStringBuffer, ccStringBuffer,
                         TEXT("Mouse: usFlags=%04x ulButtons=%04x usButtonFlags=%04x usButtonData=%04x ulRawButtons=%04x lLastX=%04x lLastY=%04x ulExtraInformation=%04x\r\n"),
                         raw->data.mouse.usFlags,
@@ -306,6 +311,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                         raw->data.mouse.ulExtraInformation);
 
                     //OutputDebugString(szStringBuffer);
+#endif // DEBUG
 
                     if (mouseMoveProcessor.ProcessMovement(raw->data.mouse.lLastX))
                     {
