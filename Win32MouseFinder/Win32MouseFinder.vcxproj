@@ -172,7 +172,6 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="mouse200.bmp" />
-    <Image Include="small.ico" />
     <Image Include="Win32MouseFinder.ico" />
   </ItemGroup>
   <ItemGroup>
