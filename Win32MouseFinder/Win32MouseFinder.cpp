@@ -7,6 +7,7 @@
 #include "framework.h"
 #include "Win32MouseFinder.h"
 
+#include "Settings.h"
 #include "TickTimeProvider.h"
 #include "MouseMoveProcessor.h"
 #include "BigMouse.h"
@@ -42,6 +43,7 @@ constexpr size_t ccStringBuffer = 255;
 TCHAR szStringBuffer[ccStringBuffer];
 #endif // _DEBUG
 
+Settings settings;
 MouseMoveProcessor<TickTimeProvider> mouseMoveProcessor;
 BigMouse bigMouse;
 
@@ -63,7 +65,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);
 
-    // TODO: Place code here.
+    // Load settings from the registry
+    settings.Load();
 
     // Initialize global strings
     LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
