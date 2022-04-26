@@ -15,10 +15,19 @@ void BigMouse::Show(HINSTANCE hInstance, HWND parent, unsigned int bitmapResourc
     if (m_bigMouse == 0)
     {
         m_bitmapResource = bitmapResource;
-        m_bigMouse = CreateWindowEx(WS_EX_LAYERED | WS_EX_TOPMOST | WS_EX_TOOLWINDOW , m_wndClassName, nullptr, WS_POPUP, 0, 0, m_width, m_height, NULL, NULL, hInstance, NULL);
+        DWORD windowStyle = WS_EX_LAYERED | WS_EX_TOPMOST | WS_EX_TOOLWINDOW;
+        if (!m_settings.IsHideMouseEnabled())
+        {
+            windowStyle |= WS_EX_TRANSPARENT;
+        }
+
+        m_bigMouse = CreateWindowEx(windowStyle, m_wndClassName, nullptr, WS_POPUP, 0, 0, m_width, m_height, NULL, NULL, hInstance, NULL);
         SetLayeredWindowAttributes(m_bigMouse, RGB(255, 0, 0), 0, LWA_COLORKEY); // set red as transparent colour
         ShowWindow(m_bigMouse, SW_SHOWNOACTIVATE);
-        ShowCursor(FALSE);
+        if (m_settings.IsHideMouseEnabled())
+        {
+            ShowCursor(FALSE);
+        }
     }
 }
 
@@ -26,7 +35,11 @@ void BigMouse::Hide()
 {
     if (m_bigMouse != 0)
     {
-        ShowCursor(TRUE);
+        if (m_settings.IsHideMouseEnabled())
+        {
+            ShowCursor(TRUE);
+        }
+
         DestroyWindow(m_bigMouse);
         m_bigMouse = 0;
     }

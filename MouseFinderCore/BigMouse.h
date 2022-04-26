@@ -1,11 +1,12 @@
 #pragma once
 
 #include "framework.h"
+#include "Settings.h"
 
 class BigMouse
 {
 public:
-	BigMouse() : m_bigMouse(0)
+	BigMouse(const Settings& settings) : m_settings(settings), m_bigMouse(0)
 	{}
 
 	void Show(HINSTANCE hInstance, HWND parent, unsigned int bitmapResource);
@@ -18,6 +19,7 @@ private:
 
 private:
 	static constexpr const TCHAR* m_wndClassName = TEXT("WIN32MOUSEFINDER_BIGMOUSE");
+	const Settings& m_settings;
 	HWND m_bigMouse;
 	static ATOM m_wndClass;
 	static unsigned int m_bitmapResource;

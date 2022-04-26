@@ -3,6 +3,7 @@
 #include "ErrorUtil.h"
 
 static LPCTSTR SettingsKey = _TEXT("Software\\Win32MouseFinder");
+static LPCTSTR HideMouseValue = _TEXT("HideMouse");
 
 HKEY OpenSettingsKey()
 {
@@ -33,6 +34,19 @@ void Settings::Load()
 
 	if (hSettingsKey)
 	{
+		DWORD hideMouseValueRead;
+		DWORD hideMouseValueReadSize = sizeof(hideMouseValueRead);
+		auto getValueResult = RegGetValue(hSettingsKey, NULL, HideMouseValue,
+			RRF_RT_REG_DWORD | RRF_ZEROONFAILURE,
+			NULL,
+			&hideMouseValueRead,
+			&hideMouseValueReadSize);
+
+		if (getValueResult == ERROR_SUCCESS)
+		{
+			m_hideMouseEnabled = hideMouseValueRead;
+		}
+
 		RegCloseKey(hSettingsKey);
 	}
 }
@@ -43,6 +57,11 @@ void Settings::Save() const
 
 	if (hSettingsKey)
 	{
+		DWORD hideMouseValueToWrite = m_hideMouseEnabled;
+		RegSetValueEx(hSettingsKey, HideMouseValue, 0, REG_DWORD,
+			reinterpret_cast<BYTE *>(&hideMouseValueToWrite),
+			sizeof(hideMouseValueToWrite));
+
 		RegCloseKey(hSettingsKey);
 	}
 }

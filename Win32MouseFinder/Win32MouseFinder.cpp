@@ -45,7 +45,7 @@ TCHAR szStringBuffer[ccStringBuffer];
 
 Settings settings;
 MouseMoveProcessor<TickTimeProvider> mouseMoveProcessor;
-BigMouse bigMouse;
+BigMouse bigMouse(settings);
 
 // Forward declarations of functions included in this code module:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
@@ -189,6 +189,7 @@ void ShowContextMenu(HWND hwnd, POINT pt)
     if (hMenu)
     {
         CheckMenuItem(hMenu, IDM_AUTORUN, MF_BYCOMMAND | (AutoRun::IsAutoRunEnabled() ? MF_CHECKED : MF_UNCHECKED));
+        CheckMenuItem(hMenu, IDM_HIDEMOUSE, MF_BYCOMMAND | (settings.IsHideMouseEnabled() ? MF_CHECKED : MF_UNCHECKED));
         HMENU hSubMenu = GetSubMenu(hMenu, 0);
         if (hSubMenu)
         {
@@ -249,6 +250,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 break;
             case IDM_AUTORUN:
                 AutoRun::ToggleAutoRun();
+                break;
+            case IDM_HIDEMOUSE:
+                settings.ToggleHideMouseEnabled();
+                settings.Save();
                 break;
             default:
                 return DefWindowProc(hWnd, message, wParam, lParam);
