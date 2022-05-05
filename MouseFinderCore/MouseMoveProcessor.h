@@ -4,13 +4,14 @@
 #include <queue>
 
 #include "MouseMoveRecord.h"
+#include "MouseMoveParameters.h"
 
 template<typename T>
 class MouseMoveProcessor
 {
 public:
 	MouseMoveProcessor()
-	:	m_movements(), m_minMovement(20), m_windowSize(1000)
+	:	m_movements()
 	{}
 
 	MouseMoveProcessor(const MouseMoveProcessor<T>& rhs) = delete;
@@ -21,7 +22,10 @@ public:
 	// Returns true if the mouse has been waggled
 	bool ProcessMovement(LONG xDistance)
 	{
-		if (abs(xDistance) < m_minMovement)
+		int mouseSensitivity = 0;
+		const MouseMoveParameters& params = mouseSensitivity < s_mouseMoveParametersCount ? s_mouseMoveParameters[mouseSensitivity] : s_mouseMoveParameters[0];
+
+		if (abs(xDistance) < params.MinMovement)
 			return false;
 
 		if (!m_movements.empty())
@@ -36,7 +40,7 @@ public:
 		auto currentTickCount = T::GetTickCount();
 		m_movements.push(MouseMoveRecord{currentTickCount, xDistance});
 
-		auto maximumAge = currentTickCount - m_windowSize;
+		auto maximumAge = currentTickCount - params.WindowSize;
 
 		// Remove any mouse movements that are older than maximumAge
 		while (!m_movements.empty() && m_movements.front().TimeStamp < maximumAge)
@@ -44,7 +48,7 @@ public:
 			m_movements.pop();
 		}
 
-		return m_movements.size() > 2;
+		return m_movements.size() > params.MinWags;
 	}
 
 private:
@@ -54,7 +58,15 @@ private:
 	}
 
 private:
+	// Sensitivity settings
+	static constexpr MouseMoveParameters s_mouseMoveParameters[] =
+	{
+		MouseMoveParameters(2, 20, 1000), // high
+		MouseMoveParameters(3, 30, 1000), // medium
+		MouseMoveParameters(4, 40, 1000)  // low
+	};
+	static constexpr size_t s_mouseMoveParametersCount = sizeof(s_mouseMoveParameters) / sizeof(MouseMoveParameters);
+
+private:
 	std::queue<MouseMoveRecord> m_movements;
-	LONG m_minMovement;
-	ULONGLONG m_windowSize;
 };
