@@ -190,6 +190,13 @@ void ShowContextMenu(HWND hwnd, POINT pt)
     {
         CheckMenuItem(hMenu, IDM_AUTORUN, MF_BYCOMMAND | (AutoRun::IsAutoRunEnabled() ? MF_CHECKED : MF_UNCHECKED));
         CheckMenuItem(hMenu, IDM_HIDEMOUSE, MF_BYCOMMAND | (settings.IsHideMouseEnabled() ? MF_CHECKED : MF_UNCHECKED));
+
+        UINT selectedSensitivityMenuItem = IDM_SENSITIVITY_HIGH + settings.GetSensitivity();
+        if (selectedSensitivityMenuItem >= IDM_SENSITIVITY_HIGH && selectedSensitivityMenuItem <= IDM_SENSITIVITY_LOW)
+        {
+            CheckMenuItem(hMenu, selectedSensitivityMenuItem, MF_BYCOMMAND | MF_CHECKED);
+        }
+
         HMENU hSubMenu = GetSubMenu(hMenu, 0);
         if (hSubMenu)
         {
@@ -253,6 +260,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 break;
             case IDM_HIDEMOUSE:
                 settings.ToggleHideMouseEnabled();
+                settings.Save();
+                break;
+            case IDM_SENSITIVITY_HIGH:
+            case IDM_SENSITIVITY_MEDIUM:
+            case IDM_SENSITIVITY_LOW:
+                settings.SetSensitivity(wmId - IDM_SENSITIVITY_HIGH);
                 settings.Save();
                 break;
             default:
