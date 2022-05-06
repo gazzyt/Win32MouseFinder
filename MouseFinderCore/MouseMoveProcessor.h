@@ -5,13 +5,15 @@
 
 #include "MouseMoveRecord.h"
 #include "MouseMoveParameters.h"
+#include "Settings.h"
 
 template<typename T>
 class MouseMoveProcessor
 {
 public:
-	MouseMoveProcessor()
-	:	m_movements()
+	MouseMoveProcessor(const Settings& settings)
+	:	m_settings{settings},
+		m_movements{}
 	{}
 
 	MouseMoveProcessor(const MouseMoveProcessor<T>& rhs) = delete;
@@ -22,7 +24,7 @@ public:
 	// Returns true if the mouse has been waggled
 	bool ProcessMovement(LONG xDistance)
 	{
-		int mouseSensitivity = 0;
+		int mouseSensitivity = m_settings.GetSensitivity();
 		const MouseMoveParameters& params = mouseSensitivity < s_mouseMoveParametersCount ? s_mouseMoveParameters[mouseSensitivity] : s_mouseMoveParameters[0];
 
 		if (abs(xDistance) < params.MinMovement)
@@ -68,5 +70,6 @@ private:
 	static constexpr size_t s_mouseMoveParametersCount = sizeof(s_mouseMoveParameters) / sizeof(MouseMoveParameters);
 
 private:
+	const Settings& m_settings;
 	std::queue<MouseMoveRecord> m_movements;
 };

@@ -44,7 +44,7 @@ TCHAR szStringBuffer[ccStringBuffer];
 #endif // _DEBUG
 
 Settings settings;
-MouseMoveProcessor<TickTimeProvider> mouseMoveProcessor;
+MouseMoveProcessor<TickTimeProvider> mouseMoveProcessor{settings};
 BigMouse bigMouse(settings);
 
 // Forward declarations of functions included in this code module:
